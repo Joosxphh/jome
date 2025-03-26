@@ -105,8 +105,6 @@ export default function Home() {
                     text="A mix of fresh vegetables, mozzarella, and tomato sauce."
                 />
               </ul>
-
-
             </main>
           </div>
         </div>

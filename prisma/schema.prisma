@@ -1,9 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,8 +9,63 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  password String
-  name     String?
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String // Stocke le hash du mot de passe
+  createdAt DateTime @default(now())
+
+  // Relation avec les recettes (un utilisateur peut en créer plusieurs)
+  recipes Recipe[]
+
+  // Relation avec les notes données par l'utilisateur
+  ratings Rating[]
+}
+
+model Recipe {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  difficulty  Int      @default(1) // De 1 à 5
+  time        Int // En minutes
+  imageUrl    String? // URL d’une image (optionnel)
+  createdAt   DateTime @default(now())
+
+  // Relation avec les ingrédients et étapes
+  ingredients Ingredient[]
+  steps       Step[]
+
+  // Relation avec l'utilisateur (qui a créé la recette)
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  // Notes (chaque utilisateur peut noter une recette)
+  ratings Rating[]
+}
+
+model Ingredient {
+  id       String @id @default(uuid())
+  name     String
+  quantity String // "400g", "2 unités", etc.
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id])
+}
+
+model Step {
+  id          String @id @default(uuid())
+  instruction String
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id])
+}
+
+model Rating {
+  id       String @id @default(uuid())
+  value    Int // Note de 1 à 5
+  userId   String
+  recipeId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  recipe Recipe @relation(fields: [recipeId], references: [id])
 }

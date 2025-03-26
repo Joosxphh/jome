@@ -1,4 +1,3 @@
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,9 +9,9 @@ datasource db {
 
 model User {
   id        String   @id @default(uuid())
-  name      String
+  name      String?
   email     String   @unique
-  password  String // Stocke le hash du mot de passe
+  password  String?  // Peut être null si l'utilisateur utilise OAuth
   createdAt DateTime @default(now())
 
   // Relation avec les recettes (un utilisateur peut en créer plusieurs)
@@ -20,6 +19,10 @@ model User {
 
   // Relation avec les notes données par l'utilisateur
   ratings Rating[]
+
+  // 🔹 Relations pour NextAuth
+  accounts Account[]
+  sessions Session[]
 }
 
 model Recipe {
@@ -68,4 +71,41 @@ model Rating {
 
   user   User   @relation(fields: [userId], references: [id])
   recipe Recipe @relation(fields: [recipeId], references: [id])
+}
+
+//
+// 🔹 Modèles nécessaires pour NextAuth
+//
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?  
+  access_token      String?  
+  expires_at        Int?      
+  token_type        String?   
+  scope            String?    
+  id_token          String?   
+  session_state     String?   
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id           String  @id @default(cuid())
+  sessionToken String  @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String  
+  token      String  @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }

@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Forma+DJR+Display:wght@400;700&family=Souvenir+Std:wght@400;700&display=swap');
+
+body {
+    font-family: 'forma-djr-display', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'souvenir-std', serif;
+    color: var(--color-secondaire);
+}

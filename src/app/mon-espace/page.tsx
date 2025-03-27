@@ -1,109 +1,85 @@
 "use client";
-
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function MonEspaceRecettes() {
-  const { status } = useSession();
-  const router = useRouter();
-
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    difficulty: 1,
-    time: 10,
-    ingredients: "",
-    steps: "",
-  });
+const RecettesPage = () => {
+  const [recettes, setRecettes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter(); // Utilisation de useRouter
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
+    const fetchRecettes = async () => {
+      const response = await fetch("/api/recettes");
+      const data = await response.json();
+      if (data.error) {
+        alert(data.error);
+      } else {
+        setRecettes(data);
+      }
+      setLoading(false);
+    };
 
-  if (status === "loading") {
-    return <p className="text-center text-xl font-semibold">Chargement...</p>;
+    fetchRecettes();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    const confirmDelete = window.confirm(
+      "Êtes-vous sûr de vouloir supprimer cette recette ?"
+    );
+    if (confirmDelete) {
+      const response = await fetch(`/api/recettes/${id}`, {
+        method: "DELETE",
+      });
+      const result = await response.json();
+      if (result.success) {
+        setRecettes(recettes.filter((recette: any) => recette.id !== id));
+      } else {
+        alert("Erreur lors de la suppression");
+      }
+    }
+  };
+
+  const handleEdit = (id: string) => {
+    router.push(`/recettes/${id}/edit`);
+  };
+
+  if (loading) {
+    return <p>Chargement...</p>;
   }
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const response = await fetch("/api/recettes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-    if (response.ok) {
-      router.refresh();
-    }
-  };
-
   return (
-    <div className="min-h-screen p-10 bg-gray-100">
-      <h1 className="text-3xl font-bold mb-6">Mon Espace Recettes</h1>
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 shadow-md rounded-lg"
-      >
-        <input
-          type="text"
-          name="title"
-          placeholder="Nom de la recette"
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded mb-2"
-        />
-        <textarea
-          name="description"
-          placeholder="Description"
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded mb-2"
-        ></textarea>
-        <input
-          type="number"
-          name="difficulty"
-          min="1"
-          max="5"
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded mb-2"
-        />
-        <input
-          type="number"
-          name="time"
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded mb-2"
-        />
-        <textarea
-          name="ingredients"
-          placeholder="Ingrédients (séparés par des virgules)"
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded mb-2"
-        ></textarea>
-        <textarea
-          name="steps"
-          placeholder="Étapes (séparées par des sauts de ligne)"
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded mb-2"
-        ></textarea>
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Ajouter Recette
-        </button>
-      </form>
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-3xl font-bold text-center mb-6">Mes Recettes</h1>
+      <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {recettes.map((recette: any, index) => (
+          <li
+            className="bg-white shadow-md rounded-lg p-4 border border-gray-200"
+            key={recette.id}
+          >
+            <h2>Recette numéro°{index + 1}</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              {recette.title}
+            </h2>
+            <p className="text-gray-600 mb-4">{recette.description}</p>
+            <div className="flex space-x-4">
+              <button
+                onClick={() => handleEdit(recette.id)}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              >
+                Modifier
+              </button>
+              <button
+                onClick={() => handleDelete(recette.id)}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+              >
+                Supprimer
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
-}
+};
+
+export default RecettesPage;

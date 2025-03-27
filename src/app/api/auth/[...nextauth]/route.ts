@@ -1,4 +1,3 @@
-// src/app/api/auth/[...nextauth]/route.ts
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import NextAuth from "next-auth";
@@ -20,8 +19,6 @@ export const authOptions = {
 
         const prisma = new PrismaClient();
 
-        console.log("credentials", credentials);
-
         const user = await prisma.user.findFirst({
           where: {
             email: credentials?.username,
@@ -32,13 +29,28 @@ export const authOptions = {
           user &&
           (await bcrypt.compare(credentials.password, user.password))
         ) {
-          return user;
+          return user; // Retourner l'utilisateur complet (avec id)
         }
 
         return null;
       },
     }),
   ],
+
+  callbacks: {
+    session: ({ session, token }) => {
+      console.log("session", session);
+      console.log("token", token);
+
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.sub,
+        },
+      };
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);

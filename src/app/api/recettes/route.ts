@@ -16,7 +16,7 @@ export async function GET(req: Request) {
 
   try {
     const recettes = await prisma.recipe.findMany({
-      where: { userId: session.user.id },
+      where: { authorId: "eba4c33f-f502-4f73-9acf-7aa253a2b6f4" },
       include: { ingredients: true, steps: true },
     });
     return NextResponse.json(recettes);
@@ -30,6 +30,7 @@ export async function GET(req: Request) {
  */
 export async function POST(req: Request) {
   const session = await getServerSession();
+
   if (!session?.user) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
@@ -38,32 +39,56 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { title, description, difficulty, time, ingredients, steps } = body;
 
+    const difficultyInt = parseInt(difficulty);
+    const timeInt = parseInt(time);
+
+    if (isNaN(difficultyInt) || isNaN(timeInt)) {
+      return NextResponse.json(
+        { error: "Difficulté et temps doivent être des nombres valides" },
+        { status: 400 }
+      );
+    }
+
+    const ingredientsArray = ingredients
+      .split(",")
+      .map((ingredient: string) => {
+        const parts = ingredient.trim().split(" ");
+        const quantity = parts.shift() || "1";
+        const name = parts.join(" ");
+        return { name, quantity };
+      });
+
+    const stepsArray = steps.split("\n").map((step: string, index: number) => ({
+      instruction: step.trim(),
+      order: index + 1,
+    }));
+
     const newRecipe = await prisma.recipe.create({
       data: {
         title,
         description,
-        difficulty,
-        time,
-        userId: session.user.id,
+        difficulty: difficultyInt,
+        time: timeInt,
+        authorId: "eba4c33f-f502-4f73-9acf-7aa253a2b6f4",
         ingredients: {
-          create: ingredients.map(
-            (ing: { name: string; quantity: string }) => ({
-              name: ing.name,
-              quantity: ing.quantity,
-            })
-          ),
+          create: ingredientsArray.map(({ name, quantity }) => ({
+            name,
+            quantity,
+          })),
         },
         steps: {
-          create: steps.map((step: { instruction: string }) => ({
-            instruction: step.instruction,
-          })),
+          create: stepsArray,
         },
       },
     });
 
     return NextResponse.json(newRecipe, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    console.error("Erreur Prisma :", error);
+    return NextResponse.json(
+      { error: "Erreur serveur", realError: error.message },
+      { status: 500 }
+    );
   }
 }
 

@@ -58,10 +58,12 @@ model Ingredient {
 model Step {
   id          String @id @default(uuid())
   instruction String
+  order       Int // Ajout de l'ordre des étapes ✅
 
   recipeId String
   recipe   Recipe @relation(fields: [recipeId], references: [id])
 }
+
 
 model Rating {
   id       String @id @default(uuid())

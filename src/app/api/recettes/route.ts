@@ -17,7 +17,7 @@ export async function GET(req: Request) {
 
   try {
     const recettes = await prisma.recipe.findMany({
-      where: { authorId: "eba4c33f-f502-4f73-9acf-7aa253a2b6f4" },
+      where: { authorId: "1145a33d-deea-4c15-83e9-3c28547e605f" },
       include: { ingredients: true, steps: true },
     });
     return NextResponse.json(recettes);
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
         description,
         difficulty: difficultyInt,
         time: timeInt,
-        authorId: "eba4c33f-f502-4f73-9acf-7aa253a2b6f4",
+        authorId: "1145a33d-deea-4c15-83e9-3c28547e605f",
         ingredients: {
           create: _ingredientsArray,
         },

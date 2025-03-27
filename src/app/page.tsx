@@ -14,7 +14,6 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
-      <Navbar />
       <section id="home" className="relative h-screen">
         <Image
           src="/pizza1.jpg"
@@ -146,7 +145,6 @@ export default function Home() {
           </main>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

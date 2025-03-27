@@ -49,13 +49,13 @@ const RecettesPage = () => {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold text-center mb-6">Mes Recettes</h1>
-      <div className="text-center mb-6">
+      <h1 className="text-3xl font-bold text-center font-serif text-secondaire mb-6">Mes Recettes</h1>
+      <div className="mb-6">
         <button
           onClick={() => router.push("/mon-espace/recette")}
-          className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600"
+          className="px-6 py-3 bg-principale text-white rounded-lg hover:bg-white border-3 border-principale hover:text-principale"
         >
-          Créer une recette
+          Ajouter une nouvelle recette
         </button>
       </div>
       <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -72,13 +72,13 @@ const RecettesPage = () => {
             <div className="flex space-x-4">
               <button
                 onClick={() => handleEdit(recette.id)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="px-4 py-2 rounded-lg bg-principale text-white hover:bg-white border-3 border-principale hover:text-principale"
               >
                 Modifier
               </button>
               <button
                 onClick={() => handleDelete(recette.id)}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                className="px-4 py-2 rounded-lg bg-secondaire text-white hover:bg-white border-3 border-secondaire hover:text-secondaire"
               >
                 Supprimer
               </button>

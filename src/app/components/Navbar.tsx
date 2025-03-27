@@ -7,11 +7,9 @@ const Navbar = () => {
                 <h1 className="text-4xl font-serif text-secondaire font-bold">Jome</h1>
                 <nav>
                     <ul className="flex space-x-4">
-                        <li><a href="#home" className="hover:underline">Home</a></li>
-                        <li><a href="#about" className="hover:underline">About</a></li>
-                        <li><a href="#menu" className="hover:underline">Menu</a></li>
-                        <li><a href="#recipes" className="hover:underline">Recipes</a></li>
-                        <li><a href="#contact" className="hover:underline">Contact</a></li>
+                        <li><a href={"/"} className="border-3 border-principale p-2 rounded-lg hover:border-3 hover:border-secondaire">Home</a></li>
+                        <li><a href="/recettes" className="border-3 border-principale p-2 rounded-lg hover:border-3 hover:border-secondaire">Recette</a></li>
+                        <li><a href="/mon-espace" className="border-3 border-principale p-2 rounded-lg hover:border-3 hover:border-secondaire">Mon espace</a></li>
                     </ul>
                 </nav>
             </div>

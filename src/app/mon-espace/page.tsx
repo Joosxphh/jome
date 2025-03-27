@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 const RecettesPage = () => {
   const [recettes, setRecettes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter(); // Utilisation de useRouter
+  const router = useRouter();
 
   useEffect(() => {
     const fetchRecettes = async () => {
@@ -40,7 +40,7 @@ const RecettesPage = () => {
   };
 
   const handleEdit = (id: string) => {
-    router.push(`/recettes/${id}/edit`);
+    router.push(`/mon-espace/recette/${id}`);
   };
 
   if (loading) {
@@ -50,6 +50,14 @@ const RecettesPage = () => {
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold text-center mb-6">Mes Recettes</h1>
+      <div className="text-center mb-6">
+        <button
+          onClick={() => router.push("/mon-espace/recette")}
+          className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600"
+        >
+          Créer une recette
+        </button>
+      </div>
       <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {recettes.map((recette: any, index) => (
           <li

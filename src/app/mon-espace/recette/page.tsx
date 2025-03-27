@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -41,12 +42,13 @@ export default function MonEspaceRecettes() {
       body: JSON.stringify(formData),
     });
     if (response.ok) {
-      router.refresh();
+      router.push("/mon-espace");
     }
   };
 
   return (
     <div className="min-h-screen p-10 bg-gray-100">
+      <Link href={"/mon-espace"}>Retour</Link>
       <h1 className="text-3xl font-bold mb-6">Mon Espace Recettes</h1>
       <form
         onSubmit={handleSubmit}
@@ -101,7 +103,7 @@ export default function MonEspaceRecettes() {
         ></textarea>
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
         >
           Ajouter Recette
         </button>
